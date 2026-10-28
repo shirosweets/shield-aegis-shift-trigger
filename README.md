@@ -5,15 +5,18 @@
 
 ## Action Inputs (Arguments)
 
-Configure the behavior of the SAST scanners by passing these inputs through the with: block in your workflow.
+Configure the behavior of the SAST scanners by passing these inputs through the `with` block in your workflow.
 
-> Path: uses: your-username/aegis-shift/sast@v1
+> Usage: `uses: shirosweets/shield-aegis-shift-trigger@v1`
 
 | Input | Description | Required | Default |
-| --- | --- | --- | --- | 
-| target_dir | Directory to scan inside the mounted workspace. | No | /src |
-| semgrep_rules | Semgrep ruleset to apply (e.g., p/default, p/golang). | No | /p/default |
-| trivy_severity | Vulnerability severities to fail the pipeline. | No | HIGH,CRITICAL |
+| --- | --- | --- | --- |
+| `target_dir` | Relative path to the directory to scan. The repository root is used by default. | No | `.` |
+| `semgrep_rules` | Space-separated Semgrep rulesets to apply (e.g., `p/default`, `p/security-audit`, `p/golang`). | No | `p/default p/security-audit` |
+| `trivy_severity` | Comma-separated Trivy severity levels to report (e.g., `HIGH,CRITICAL`). | No | `HIGH,CRITICAL` |
+| `trivy_scanners` | Comma-separated Trivy scanners to run: `vuln`, `misconfig`, and/or `secret`. | No | `vuln,misconfig,secret` |
+| `ignore_unfixed` | Whether Trivy ignores vulnerabilities without an available fix (`true` or `false`). | No | `true` |
+| `blocking` | Whether findings fail the workflow (`true`) or are reported in audit mode (`false`). | No | `true` |
 
 ## 🔐 Environment Variables (Optional)
 
@@ -56,3 +59,8 @@ jobs:
           # Change to 'false' if you want to audit legacy code without fails CI/CD
           blocking: 'true'
 ```
+
+## Policies and guidelines
+
+- [Contributing](CONTRIBUTING.md): guidance for issues, pull requests, and testing changes.
+- [Security](SECURITY.md): how to report vulnerabilities privately, safe testing boundaries, and fixture usage.
