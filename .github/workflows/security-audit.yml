@@ -47,23 +47,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-self-dogfooding:
-    name: Aegis-Shift Self-Scan
-    runs-on: ubuntu-latest
-    needs: [actionlint, shellcheck, secret-scan] # Espera a que los linters pasen primero
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+  self-dogfooding:
+      name: Aegis-Shift Self-Scan
+      runs-on: ubuntu-latest
+      needs: [actionlint, shellcheck, secret-scan] # Espera a que los linters pasen primero
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Security Scan via Local Action
-        # El './' le indica a GitHub que consuma el action.yml de este mismo repositorio
-        uses: ./
-        with:
-          target_dir: '.'
-          # Reglas específicas para asegurar scripts de Bash y GitHub Actions
-          semgrep_rules: 'p/bash p/github-actions p/security-audit'
-          trivy_severity: 'HIGH,CRITICAL'
-          blocking: 'true'
+        - name: Security Scan via Local Action
+          # El './' le indica a GitHub que consuma el action.yml de este mismo repositorio
+          uses: ./
+          with:
+            target_dir: '.'
+            # Reglas específicas para asegurar scripts de Bash y GitHub Actions
+            semgrep_rules: 'p/bash p/github-actions p/security-audit'
+            trivy_severity: 'HIGH,CRITICAL'
+            blocking: 'true'
 
 integration-tests:
     name: Input Variations Tests

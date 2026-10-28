@@ -1,3 +1,4 @@
+[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-v5-undefined.svg?logo=github&logoColor=white&style=flat)](https://github.com/marketplace/actions/codecov)
 ![License](https://img.shields.io/github/license/shirosweets/shield-aegis-shift-trigger)
 
 # SAST: Shield Aegis Shift Trigger (Static Application Security Testing) 🛡️
@@ -19,6 +20,7 @@ Configure the behavior of the SAST scanners by passing these inputs through the 
 If you need to connect your pipelines to external dashboards, you can map repository secrets to the action's environment.
 
 | Variable | Description |
+| --- | --- |
 | SEMGREP_APP_TOKEN | Required only if you are using the Semgrep AppSec Platform to track findings historically. Map this from your GitHub Secrets to allow the CLI to push results to your dashboard. |
 
 ## 💡 Integration Example
@@ -39,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Run Static Scanners
         uses: shirosweets/shield-aegis-shift-trigger@v1
