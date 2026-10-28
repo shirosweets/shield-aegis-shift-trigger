@@ -10,6 +10,10 @@ inputs:
     description: 'Relative directory to scan (defaults to repository root: ".")'
     required: false
     default: '.'
+  exclude_dirs:
+    description: 'Space-separated directories relative to the workspace to exclude from scans'
+    required: false
+    default: ''
   semgrep_rules:
     description: 'Semgrep rulesets to apply (e.g., p/default, p/security-audit, p/golang)'
     required: false
@@ -48,6 +52,7 @@ runs:
       shell: bash
       env:
         TARGET_DIR: ${{ inputs.target_dir }}
+        EXCLUDE_DIRS: ${{ inputs.exclude_dirs }}
         RULES: ${{ inputs.semgrep_rules }}
         BLOCKING: ${{ inputs.blocking }}
         WORKSPACE: ${{ github.workspace }}
@@ -57,6 +62,7 @@ runs:
       shell: bash
       env:
         TARGET_DIR: ${{ inputs.target_dir }}
+        EXCLUDE_DIRS: ${{ inputs.exclude_dirs }}
         SEVERITY: ${{ inputs.trivy_severity }}
         TRIVY_VERSION: ${{ inputs.trivy_version }}
         SCANNERS: ${{ inputs.trivy_scanners }}

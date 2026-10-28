@@ -24,6 +24,7 @@ Configure the behavior of the SAST scanners by passing these inputs through the 
 | Input | Description | Required | Default |
 | --- | --- | --- | --- |
 | `target_dir` | Relative path to the directory to scan. The repository root is used by default. | No | `.` |
+| `exclude_dirs` | Space-separated workspace-relative directories to exclude from both scans. | No | None |
 | `semgrep_rules` | Space-separated Semgrep rulesets to apply (e.g., `p/default`, `p/security-audit`, `p/golang`). | No | `p/default p/security-audit` |
 | `trivy_severity` | Comma-separated Trivy severity levels to report (e.g., `HIGH,CRITICAL`). | No | `HIGH,CRITICAL` |
 | `trivy_version` | Trivy Docker image tag to use. Set a release tag to avoid following the mutable `latest` tag. Docker selects the image variant for the runner architecture automatically. | No | `latest` |
@@ -50,6 +51,9 @@ on:
   pull_request:
     # Triggers the scan on every PR targeting the main branch (Quality Gate)
     branches: [ "main" ]
+
+permissions:
+  contents: read
 
 jobs:
   static-security-analysis:

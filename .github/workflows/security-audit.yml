@@ -66,6 +66,7 @@ jobs:
           uses: ./
           with:
             target_dir: '.'
+            exclude_dirs: 'tests/fixtures'
             # Reglas específicas para asegurar scripts de Bash y GitHub Actions
             semgrep_rules: 'p/bash p/github-actions p/security-audit'
             trivy_severity: 'HIGH,CRITICAL'
@@ -83,6 +84,7 @@ jobs:
           uses: ./
           with:
             target_dir: '.'
+            exclude_dirs: 'tests/fixtures'
             blocking: 'false'
             ignore_unfixed: 'true'
 
@@ -90,5 +92,6 @@ jobs:
           uses: ./
           with:
             target_dir: '.'
+            exclude_dirs: 'tests/fixtures'
             trivy_scanners: 'misconfig' # Fuerza a Trivy a ignorar vulnerabilidades y solo evaluar IaC
             blocking: 'true'

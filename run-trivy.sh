@@ -23,17 +23,28 @@ echo "🔬 Scanners active: $SCANNERS"
 echo "🙈 Ignore unfixed: $IGNORE_UNFIXED"
 echo "🚦 Blocking Mode: $BLOCKING"
 
-# Dynamically build Trivy arguments
-TRIVY_ARGS="--scanners $SCANNERS --severity $SEVERITY --no-progress"
+# Dynamically build Trivy arguments.
+TRIVY_ARGS=(--scanners "$SCANNERS" --severity "$SEVERITY" --no-progress)
+
+read -r -a EXCLUDE_DIR_LIST <<< "$EXCLUDE_DIRS"
+for dir in "${EXCLUDE_DIR_LIST[@]}"; do
+  case "$dir" in
+    /*|..|../*|*/..|*/../*)
+      echo "❌ Excluded directories must be relative workspace paths: $dir" >&2
+      exit 2
+      ;;
+  esac
+  TRIVY_ARGS+=(--skip-dirs "/src/${dir%/}")
+done
 
 if [ "$IGNORE_UNFIXED" = "true" ]; then
-  TRIVY_ARGS="$TRIVY_ARGS --ignore-unfixed"
+  TRIVY_ARGS+=(--ignore-unfixed)
 fi
 
 if [ "$BLOCKING" = "true" ]; then
-  TRIVY_ARGS="$TRIVY_ARGS --exit-code 1"
+  TRIVY_ARGS+=(--exit-code 1)
 else
-  TRIVY_ARGS="$TRIVY_ARGS --exit-code 0"
+  TRIVY_ARGS+=(--exit-code 0)
 fi
 
 SCAN_PATH="/src/$TARGET_DIR"
@@ -41,11 +52,10 @@ SCAN_PATH="/src/$TARGET_DIR"
 set +e
 
 # Execute Trivy via Docker in filesystem (fs) mode
-# The $TRIVY_ARGS variable is intentionally unquoted to expand properly
 docker run --rm \
   -v "$WORKSPACE:/src:ro" \
   "aquasec/trivy:$TRIVY_VERSION" \
-  fs $TRIVY_ARGS "$SCAN_PATH"
+  fs "${TRIVY_ARGS[@]}" "$SCAN_PATH"
 
 EXIT_CODE=$?
 set -e

@@ -21,10 +21,23 @@ echo "📜 Rulesets: $RULES"
 echo "📂 Target Directory: $TARGET_DIR"
 echo "🚦 Blocking Mode: $BLOCKING"
 
-# Parse multiple rulesets into valid Semgrep arguments
-CONFIG_ARGS=""
-for rule in $RULES; do
-  CONFIG_ARGS="$CONFIG_ARGS --config=$rule"
+# Parse rulesets and excluded directories into Semgrep arguments.
+CONFIG_ARGS=()
+read -r -a RULE_LIST <<< "$RULES"
+for rule in "${RULE_LIST[@]}"; do
+  CONFIG_ARGS+=(--config "$rule")
+done
+
+EXCLUDE_ARGS=()
+read -r -a EXCLUDE_DIR_LIST <<< "$EXCLUDE_DIRS"
+for dir in "${EXCLUDE_DIR_LIST[@]}"; do
+  case "$dir" in
+    /*|..|../*|*/..|*/../*)
+      echo "❌ Excluded directories must be relative workspace paths: $dir" >&2
+      exit 2
+      ;;
+  esac
+  EXCLUDE_ARGS+=(--exclude "$dir/**")
 done
 
 # The workspace is mounted to /src. TARGET_DIR is relative to the workspace.
@@ -34,12 +47,11 @@ SCAN_PATH="/src/$TARGET_DIR"
 set +e
 
 # Execute Semgrep via Docker
-# The $CONFIG_ARGS variable is intentionally left unquoted to expand into multiple parameters
 docker run --rm \
   -v "$WORKSPACE:/src:ro" \
   -e SEMGREP_APP_TOKEN \
   semgrep/semgrep \
-  semgrep scan $CONFIG_ARGS --error "$SCAN_PATH"
+  semgrep scan "${CONFIG_ARGS[@]}" "${EXCLUDE_ARGS[@]}" --error "$SCAN_PATH"
 
 EXIT_CODE=$?
 set -e
