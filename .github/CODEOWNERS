@@ -1,0 +1,20 @@
+# Protect sensitive files from unauthorized modification.
+# Any PR touching these files requires explicit review from @shirosweets.
+# Reference: GitHub Actions supply chain attack research (2025)
+
+# Workflow files — any change here requires review (supply chain attack prevention)
+.github/workflows/               @shirosweets
+
+# AI coding instruction files — protect against "Rules File Backdoor" attacks
+# Reference: Pillar Security (March 2025), CVE-2025-59536
+.github/copilot-instructions.md  @shirosweets
+.github/prompts/                 @shirosweets
+AGENTS.md                        @shirosweets
+CLAUDE.md                        @shirosweets
+.cursor/                         @shirosweets
+.cursorrules                     @shirosweets
+.windsurfrules                   @shirosweets
+.claude/                         @shirosweets
+.gemini/                         @shirosweets
+.codex/                          @shirosweets
+copilot-instructions.md          @shirosweets
