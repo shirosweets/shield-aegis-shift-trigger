@@ -1,5 +1,5 @@
 name: 'Aegis-Shift SAST'
-description: 'Executes Static Application Security Testing (SAST) using Semgrep and Trivy.'
+description: 'Executes advanced Static Application Security Testing (SAST) and IaC scanning using Semgrep and Trivy.'
 author: 'Valentina Solange Vispo'
 branding:
   icon: 'shield'
@@ -7,38 +7,55 @@ branding:
 
 inputs:
   target_dir:
-    description: 'Directory to scan inside the mounted workspace'
+    description: 'Relative directory to scan (defaults to repository root: ".")'
     required: false
-    default: '/src'
+    default: '.'
   semgrep_rules:
-    description: 'Semgrep ruleset to apply'
+    description: 'Semgrep rulesets to apply (e.g., p/default, p/security-audit, p/golang)'
     required: false
-    default: 'p/default'
+    default: 'p/default p/security-audit'
   trivy_severity:
-    description: 'Vulnerability severities to fail the pipeline (e.g., HIGH,CRITICAL)'
+    description: 'Vulnerability severities to report (e.g., HIGH,CRITICAL)'
     required: false
     default: 'HIGH,CRITICAL'
+  trivy_scanners:
+    description: 'Trivy scanners to run (vuln, misconfig, secret)'
+    required: false
+    default: 'vuln,misconfig,secret'
+  ignore_unfixed:
+    description: 'Ignore vulnerabilities that do not have a patch/fix available (true/false)'
+    required: false
+    default: 'true'
+  blocking:
+    description: 'If true, pipeline fails on vulnerabilities. If false, it acts as an audit mode.'
+    required: false
+    default: 'true'
 
 runs:
   using: 'composite'
   steps:
-    - name: Grant execution permissions to scripts
+    - name: 🛡️ Grant execution permissions to internal engines
       shell: bash
       run: |
         chmod +x ${{ github.action_path }}/run-sast.sh
         chmod +x ${{ github.action_path }}/run-trivy.sh
 
-    - name: Execute Semgrep (Code Analysis)
+    - name: 🔬 Execute Semgrep (Code Analysis)
       shell: bash
       env:
         TARGET_DIR: ${{ inputs.target_dir }}
         RULES: ${{ inputs.semgrep_rules }}
+        BLOCKING: ${{ inputs.blocking }}
         WORKSPACE: ${{ github.workspace }}
       run: ${{ github.action_path }}/run-sast.sh
 
-    - name: Execute Trivy (Dependency & IaC Analysis)
+    - name: 📦 Execute Trivy (Dependency, Secrets & IaC Analysis)
       shell: bash
       env:
+        TARGET_DIR: ${{ inputs.target_dir }}
         SEVERITY: ${{ inputs.trivy_severity }}
+        SCANNERS: ${{ inputs.trivy_scanners }}
+        IGNORE_UNFIXED: ${{ inputs.ignore_unfixed }}
+        BLOCKING: ${{ inputs.blocking }}
         WORKSPACE: ${{ github.workspace }}
       run: ${{ github.action_path }}/run-trivy.sh

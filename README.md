@@ -1,5 +1,3 @@
-
-[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-v5-undefined.svg?logo=github&logoColor=white&style=flat)](https://github.com/marketplace/actions/codecov)
 ![License](https://img.shields.io/github/license/shirosweets/shield-aegis-shift-trigger)
 
 # SAST: Shield Aegis Shift Trigger (Static Application Security Testing) 🛡️
@@ -26,26 +24,33 @@ If you need to connect your pipelines to external dashboards, you can map reposi
 ## 💡 Integration Example
 
 ```yml
-name: Continuous Integration - Security
+name: Continuous Integration - SAST - Security
 
 on:
+  push:
+    branches: [ "main" ]
   pull_request:
+    # Triggers the scan on every PR targeting the main branch (Quality Gate)
     branches: [ "main" ]
 
 jobs:
   static-security-analysis:
-    name: Aegis-Shift SAST Scan
+    name: Shield Aegis Shift Trigger Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Run T.O.A.S.T. Static Scanners
-        uses: your-username/aegis-shift/sast@v1
+      - name: Run Static Scanners
+        uses: shirosweets/shield-aegis-shift-trigger@v1
         with:
           target_dir: '.'
           # Applying language-specific rules and strict security audits
-          semgrep_rules: 'p/golang p/security-audit p/secrets'
+          semgrep_rules: 'p/security-audit p/secrets'
           # Failing the pipeline even on MEDIUM severity dependencies
           trivy_severity: 'MEDIUM,HIGH,CRITICAL'
+          trivy_scanners: 'vuln,misconfig,secret'
+          ignore_unfixed: 'true'
+          # Change to 'false' if you want to audit legacy code without fails CI/CD
+          blocking: 'true'
 ```
