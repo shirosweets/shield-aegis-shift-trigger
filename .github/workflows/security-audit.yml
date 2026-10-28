@@ -50,7 +50,7 @@ jobs:
 self-dogfooding:
     name: Aegis-Shift Self-Scan
     runs-on: ubuntu-latest
-    needs: [static-linters] # Espera a que los linters pasen primero
+    needs: [actionlint, shellcheck, secret-scan] # Espera a que los linters pasen primero
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -68,7 +68,7 @@ self-dogfooding:
 integration-tests:
     name: Input Variations Tests
     runs-on: ubuntu-latest
-    needs: [static-linters]
+    needs: [actionlint, shellcheck, secret-scan]
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
