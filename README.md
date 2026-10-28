@@ -3,6 +3,18 @@
 
 # SAST: Shield Aegis Shift Trigger (Static Application Security Testing) 🛡️
 
+## What is Static Application Security Testing (SAST)?
+
+Static Application Security Testing (SAST) analyzes source code and related
+project files for security issues without running the application. Finding
+potential problems early in the development process helps teams address them
+before deployment.
+
+Shield Aegis Shift Trigger combines Semgrep for source-code analysis with
+Trivy for dependency vulnerabilities, misconfigurations, and secrets. Configure
+the action to fail the workflow when findings are detected, or use audit mode
+to report findings without blocking it.
+
 ## Action Inputs (Arguments)
 
 Configure the behavior of the SAST scanners by passing these inputs through the `with` block in your workflow.
@@ -14,6 +26,7 @@ Configure the behavior of the SAST scanners by passing these inputs through the 
 | `target_dir` | Relative path to the directory to scan. The repository root is used by default. | No | `.` |
 | `semgrep_rules` | Space-separated Semgrep rulesets to apply (e.g., `p/default`, `p/security-audit`, `p/golang`). | No | `p/default p/security-audit` |
 | `trivy_severity` | Comma-separated Trivy severity levels to report (e.g., `HIGH,CRITICAL`). | No | `HIGH,CRITICAL` |
+| `trivy_version` | Trivy Docker image tag to use. Set a release tag to avoid following the mutable `latest` tag. Docker selects the image variant for the runner architecture automatically. | No | `latest` |
 | `trivy_scanners` | Comma-separated Trivy scanners to run: `vuln`, `misconfig`, and/or `secret`. | No | `vuln,misconfig,secret` |
 | `ignore_unfixed` | Whether Trivy ignores vulnerabilities without an available fix (`true` or `false`). | No | `true` |
 | `blocking` | Whether findings fail the workflow (`true`) or are reported in audit mode (`false`). | No | `true` |

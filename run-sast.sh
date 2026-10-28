@@ -16,7 +16,7 @@
 
 set -e # Stops the script if a critical error occurs
 
-echo "🛡️ Starting Aegis-Shift SAST (Semgrep)..."
+echo "🛡️ Starting Shield Aegis Shift Trigger SAST (Semgrep)..."
 echo "📜 Rulesets: $RULES"
 echo "📂 Target Directory: $TARGET_DIR"
 echo "🚦 Blocking Mode: $BLOCKING"

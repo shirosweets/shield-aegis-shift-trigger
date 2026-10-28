@@ -1,6 +1,6 @@
 # Security
 
-Thank you for helping keep Aegis-Shift and its users safe. I take security
+Thank you for helping keep Shield Aegis Shift Trigger and its users safe. I take security
 reports seriously and appreciate responsible disclosures.
 
 ## Report a vulnerability

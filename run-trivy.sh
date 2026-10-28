@@ -16,7 +16,8 @@
 
 set -e
 
-echo "🛡️ Starting Aegis-Shift Trivy Scanner..."
+echo "🛡️ Starting Shield Aegis Shift Trigger Trivy Scanner..."
+echo "📦 Trivy Docker image tag: $TRIVY_VERSION"
 echo "🔍 Target severities: $SEVERITY"
 echo "🔬 Scanners active: $SCANNERS"
 echo "🙈 Ignore unfixed: $IGNORE_UNFIXED"
@@ -43,7 +44,7 @@ set +e
 # The $TRIVY_ARGS variable is intentionally unquoted to expand properly
 docker run --rm \
   -v "$WORKSPACE:/src:ro" \
-  aquasec/trivy:latest \
+  "aquasec/trivy:$TRIVY_VERSION" \
   fs $TRIVY_ARGS "$SCAN_PATH"
 
 EXIT_CODE=$?

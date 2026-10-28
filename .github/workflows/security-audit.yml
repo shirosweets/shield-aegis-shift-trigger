@@ -48,7 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   self-dogfooding:
-      name: Aegis-Shift Self-Scan
+      name: Shield Aegis Shift Trigger Self-Scan
       runs-on: ubuntu-latest
       needs: [actionlint, shellcheck, secret-scan] # Espera a que los linters pasen primero
       steps:

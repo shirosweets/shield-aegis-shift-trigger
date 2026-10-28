@@ -1,4 +1,4 @@
-name: 'Aegis-Shift SAST'
+name: 'Shield Aegis Shift Trigger SAST'
 description: 'Executes advanced Static Application Security Testing (SAST) and IaC scanning using Semgrep and Trivy.'
 author: 'Valentina Solange Vispo'
 branding:
@@ -18,6 +18,10 @@ inputs:
     description: 'Vulnerability severities to report (e.g., HIGH,CRITICAL)'
     required: false
     default: 'HIGH,CRITICAL'
+  trivy_version:
+    description: 'Trivy Docker image tag to use (e.g., latest or a release version)'
+    required: false
+    default: 'latest'
   trivy_scanners:
     description: 'Trivy scanners to run (vuln, misconfig, secret)'
     required: false
@@ -54,6 +58,7 @@ runs:
       env:
         TARGET_DIR: ${{ inputs.target_dir }}
         SEVERITY: ${{ inputs.trivy_severity }}
+        TRIVY_VERSION: ${{ inputs.trivy_version }}
         SCANNERS: ${{ inputs.trivy_scanners }}
         IGNORE_UNFIXED: ${{ inputs.ignore_unfixed }}
         BLOCKING: ${{ inputs.blocking }}
