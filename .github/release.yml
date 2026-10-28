@@ -1,0 +1,41 @@
+name: Update Major Tag
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-major:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Requisito estricto para poder hacer push de tags
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # Necesario para traer todo el historial de tags
+
+      - name: Actualizar tag flotante
+        shell: bash
+        env:
+          # Captura el nombre del tag del release (ej. v1.2.0)
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          # Extrae la versión mayor (ej. v1)
+          MAJOR_VERSION=$(echo "$TAG_NAME" | grep -o '^v[0-9]*')
+          
+          if [ -z "$MAJOR_VERSION" ]; then
+            echo "❌ Error: El tag $TAG_NAME no sigue el formato semántico vX.Y.Z"
+            exit 1
+          fi
+          
+          echo "🔄 Moviendo $MAJOR_VERSION para apuntar a $TAG_NAME..."
+          
+          # Configuración del bot de GitHub Actions
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Fuerza la creación del tag localmente y lo empuja al repositorio
+          git tag -fa "$MAJOR_VERSION" -m "Avanza $MAJOR_VERSION a la versión $TAG_NAME"
+          git push origin "$MAJOR_VERSION" --force

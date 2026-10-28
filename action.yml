@@ -1,0 +1,44 @@
+name: 'Aegis-Shift SAST'
+description: 'Executes Static Application Security Testing (SAST) using Semgrep and Trivy.'
+author: 'Valentina Solange Vispo'
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  target_dir:
+    description: 'Directory to scan inside the mounted workspace'
+    required: false
+    default: '/src'
+  semgrep_rules:
+    description: 'Semgrep ruleset to apply'
+    required: false
+    default: 'p/default'
+  trivy_severity:
+    description: 'Vulnerability severities to fail the pipeline (e.g., HIGH,CRITICAL)'
+    required: false
+    default: 'HIGH,CRITICAL'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Grant execution permissions to scripts
+      shell: bash
+      run: |
+        chmod +x ${{ github.action_path }}/run-sast.sh
+        chmod +x ${{ github.action_path }}/run-trivy.sh
+
+    - name: Execute Semgrep (Code Analysis)
+      shell: bash
+      env:
+        TARGET_DIR: ${{ inputs.target_dir }}
+        RULES: ${{ inputs.semgrep_rules }}
+        WORKSPACE: ${{ github.workspace }}
+      run: ${{ github.action_path }}/run-sast.sh
+
+    - name: Execute Trivy (Dependency & IaC Analysis)
+      shell: bash
+      env:
+        SEVERITY: ${{ inputs.trivy_severity }}
+        WORKSPACE: ${{ github.workspace }}
+      run: ${{ github.action_path }}/run-trivy.sh
