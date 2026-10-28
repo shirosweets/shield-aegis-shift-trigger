@@ -4,3 +4,9 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # Read https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/optimizing-pr-creation-version-updates#setting-a-cooldown-period-for-dependabot-version-updates
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
