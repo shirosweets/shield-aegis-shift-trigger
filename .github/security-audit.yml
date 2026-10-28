@@ -1,0 +1,88 @@
+name: Repository Security Checks
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  actionlint:
+    name: Lint GitHub Actions (Actionlint)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Run Actionlint
+        uses: raven-actions/actionlint@v2
+        with:
+          # Scans both action.yml and .github/workflows/*.yml
+          actionlint_flags: -color
+
+  shellcheck:
+    name: Lint Bash Scripts (ShellCheck)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: '.'
+          severity: 'error' # Fails the pipeline only on severe Bash errors
+
+  secret-scan:
+    name: Scan for Secrets (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # Required to scan the entire git history
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+self-dogfooding:
+    name: Aegis-Shift Self-Scan
+    runs-on: ubuntu-latest
+    needs: [static-linters] # Espera a que los linters pasen primero
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Security Scan via Local Action
+        # El './' le indica a GitHub que consuma el action.yml de este mismo repositorio
+        uses: ./
+        with:
+          target_dir: '.'
+          # Reglas específicas para asegurar scripts de Bash y GitHub Actions
+          semgrep_rules: 'p/bash p/github-actions p/security-audit'
+          trivy_severity: 'HIGH,CRITICAL'
+          blocking: 'true'
+
+integration-tests:
+    name: Input Variations Tests
+    runs-on: ubuntu-latest
+    needs: [static-linters]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Test Audit Mode (Non-Blocking)
+        uses: ./
+        with:
+          target_dir: '.'
+          blocking: 'false'
+          ignore_unfixed: 'true'
+
+      - name: Test Specific Scanners Isolation
+        uses: ./
+        with:
+          target_dir: '.'
+          trivy_scanners: 'misconfig' # Fuerza a Trivy a ignorar vulnerabilidades y solo evaluar IaC
+          blocking: 'true'

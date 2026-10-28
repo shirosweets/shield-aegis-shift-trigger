@@ -1,0 +1,50 @@
+name: Security Engines Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-audit-mode:
+    name: Test Audit Mode (Non-Blocking)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Aegis-Shift (Audit Mode)
+        uses: ./
+        with:
+          target_dir: './tests/fixtures'
+          semgrep_rules: 'p/javascript p/security-audit'
+          blocking: 'false' # Escanea, pero no debe fallar el pipeline
+
+  test-strict-mode:
+    name: Test Strict Mode (Blocking)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Aegis-Shift (Strict Mode)
+        id: security_scan
+        uses: ./
+        continue-on-error: true # Atrapamos el error intencionalmente
+        with:
+          target_dir: './tests/fixtures'
+          semgrep_rules: 'p/javascript p/security-audit'
+          blocking: 'true'
+
+      - name: Assert Action Failed Correctly
+        if: steps.security_scan.outcome != 'failure'
+        run: |
+          echo "❌ TEST FAILED: The action was supposed to fail because of the vulnerable fixtures, but it passed."
+          exit 1
+
+      - name: Assert Success
+        if: steps.security_scan.outcome == 'failure'
+        run: |
+          echo "✅ TEST PASSED: The action correctly detected the vulnerabilities and blocked the pipeline."
+          exit 0
