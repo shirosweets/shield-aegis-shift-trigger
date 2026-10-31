@@ -68,7 +68,7 @@ jobs:
             target_dir: '.'
             exclude_dirs: 'tests/fixtures'
             # Reglas específicas para asegurar scripts de Bash y GitHub Actions
-            semgrep_rules: 'p/bash p/github-actions p/security-audit'
+            semgrep_rules: 'r/bash p/github-actions p/security-audit'
             trivy_severity: 'HIGH,CRITICAL'
             blocking: 'true'
 

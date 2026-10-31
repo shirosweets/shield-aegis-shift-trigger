@@ -64,7 +64,7 @@ if [ $EXIT_CODE -ne 0 ]; then
   # This block will only trigger if BLOCKING is true and vulnerabilities are found,
   # because if BLOCKING is false, Trivy returns exit code 0 natively.
   echo "❌ Trivy analysis failed. Vulnerable dependencies, secrets, or misconfigurations detected."
-  exit $EXIT_CODE
+  exit "$EXIT_CODE"
 fi
 
 echo "✅ Trivy completed cleanly or ran in audit mode. Proceeding."
