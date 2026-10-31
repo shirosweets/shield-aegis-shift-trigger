@@ -60,7 +60,7 @@ set -e
 if [ $EXIT_CODE -ne 0 ]; then
   if [ "$BLOCKING" = "true" ]; then
     echo "❌ Static analysis failed. Vulnerabilities or policy violations detected."
-    exit $EXIT_CODE
+    exit "$EXIT_CODE"
   else
     echo "⚠️ Vulnerabilities found, but BLOCKING mode is disabled (Audit only). Proceeding..."
     exit 0
